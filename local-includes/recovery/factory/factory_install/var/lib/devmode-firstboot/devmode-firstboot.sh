@@ -48,7 +48,7 @@ mount "$recovery_dev" "$recovery_dir"
 # copy factory-diag logs to recovery partition
 rm -rf "$recovery_dir"/factory-log/
 mkdir -p "$recovery_dir"/factory-log/
-cp -r /root/.local/share/checkbox-ng "$recovery_dir"/factory-log/
+cp -r /root/snap/factory-diag/x1/.local/share/checkbox-ng "$recovery_dir"/factory-log/
 cp /writable/factory-diag-result "$recovery_dir"/factory-log/
 umount "$recovery_dir"
 
