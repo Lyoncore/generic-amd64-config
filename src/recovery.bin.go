@@ -340,11 +340,9 @@ func main() {
 	}
 	rplib.Shellexec("/recovery/bin/rsync", "-a", src+"/", dst+"/")
 
-	// add firstboot service
-	const MULTI_USER_TARGET_WANTS_FOLDER = "/etc/systemd/system/multi-user.target.wants/"
-	log.Println("[Add FIRSTBOOT service]")
-	rplib.Shellexec("/recovery/bin/rsync", "-a", "--exclude='.gitkeep'", filepath.Join("/recovery/factory", RECOVERY_TYPE)+"/", rootdir+"/")
-	rplib.Shellexec("ln", "-s", "/lib/systemd/system/devmode-firstboot.service", filepath.Join(rootdir, MULTI_USER_TARGET_WANTS_FOLDER, "devmode-firstboot.service"))
+	// unpack system_local-include
+	// TODO: unpack system_local-include
+
 	err = ioutil.WriteFile(filepath.Join(rootdir, "/var/lib/devmode-firstboot/conf.sh"), []byte(fmt.Sprintf("RECOVERYFSLABEL=\"%s\"\nRECOVERY_TYPE=\"%s\"\n", RECOVERY_LABEL, RECOVERY_TYPE)), 0644)
 	rplib.Checkerr(err)
 
