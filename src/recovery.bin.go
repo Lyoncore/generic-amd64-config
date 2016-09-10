@@ -341,7 +341,7 @@ func main() {
 	rplib.Shellexec("/recovery/bin/rsync", "-a", src+"/", dst+"/")
 
 	// unpack system_local-include
-	// TODO: unpack system_local-include
+	rplib.Shellexec("unsquashfs", "-f", "-d", rootdir, "/recovery/system_local-include.squashfs")
 
 	err = ioutil.WriteFile(filepath.Join(rootdir, "/var/lib/devmode-firstboot/conf.sh"), []byte(fmt.Sprintf("RECOVERYFSLABEL=\"%s\"\nRECOVERY_TYPE=\"%s\"\n", RECOVERY_LABEL, RECOVERY_TYPE)), 0644)
 	rplib.Checkerr(err)
