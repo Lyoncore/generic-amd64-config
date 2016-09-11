@@ -307,7 +307,7 @@ func main() {
 	defer syscall.Unmount("/tmp/system-boot", 0)
 
 	log.Println("add grub entry")
-	hack_grub_cfg(rplib.FACTORY_RESTORE, "Factory Restore", RECOVERY_LABEL, "/tmp/system-boot/EFI/ubuntu/grub/grub.cfg")
+	hack_grub_cfg(rplib.FACTORY_RESTORE, "Factory Restore", RECOVERY_LABEL, "/tmp/system-boot/EFI/ubuntu/grub.cfg")
 
 	// remove past uefi entry
 	log.Println("[remove past uefi entry]")
@@ -359,12 +359,12 @@ func main() {
 
 		log.Println("[disable cloud-init at factory-diag stage]")
 		// NOTE: this is hardcoded in `devmode-firstboot.sh`; keep in sync
-		rplib.Shellexec(GRUB_EDITENV, "/tmp/system-boot/EFI/ubuntu/grub/grubenv", "set", "cloud_init_disabled=cloud-init=disabled")
+		rplib.Shellexec(GRUB_EDITENV, "/tmp/system-boot/EFI/ubuntu/grubenv", "set", "cloud_init_disabled=cloud-init=disabled")
 
 		log.Println("[set next recoverytype to factory_restore]")
 		rplib.Shellexec("mount", "-o", "rw,remount", "/recovery_partition")
 		log.Println("set recoverytype")
-		rplib.Shellexec(GRUB_EDITENV, "/recovery_partition/efi/ubuntu/grub/grubenv", "set", "recoverytype="+rplib.FACTORY_RESTORE)
+		rplib.Shellexec(GRUB_EDITENV, "/recovery_partition/efi/ubuntu/grubenv", "set", "recoverytype="+rplib.FACTORY_RESTORE)
 
 		log.Println("[Start serial vault]")
 

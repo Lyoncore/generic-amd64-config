@@ -14,7 +14,7 @@ hookdir=/writable/system-data/var/lib/devmode-firstboot/hooks.d/
 . $hookdir/ORDER
 
 # umount, inactive snappy_boot_entry and reboot
-grub-editenv /boot/efi/EFI/ubuntu/grub/grubenv unset cloud_init_disabled
+grub-editenv /boot/efi/EFI/ubuntu/grubenv unset cloud_init_disabled
 touch /writable/system-data/var/lib/devmode-firstboot/devmode-firstboot.stamp
 
 reboot
