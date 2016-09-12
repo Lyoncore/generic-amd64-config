@@ -11,6 +11,9 @@ configs:
   release: 16
   channel: edge
   size: 4
+  partition-type: gpt
+  bootloader: grub
+  modelassertion: model.assertion
   packages:
     - snapweb
 udf:

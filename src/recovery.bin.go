@@ -17,6 +17,7 @@ import (
 )
 
 import rplib "github.com/Lyoncore/ubuntu-recovery-rplib"
+import recoverydirs "github.com/Lyoncore/ubuntu-recovery-rplib/dirs/recovery"
 
 var version string
 var commit string
@@ -237,13 +238,15 @@ func main() {
 
 	// If this is user triggered factory restore (first time is in factory and should happen automatically), ask user for confirm.
 	if rplib.FACTORY_RESTORE == RECOVERY_TYPE {
-		ioutil.WriteFile("/proc/sys/kernel/printk", []byte("0 0 0 0"), 0644)
+		err := ioutil.WriteFile("/proc/sys/kernel/printk", []byte("0 0 0 0"), 0644)
+		rplib.Checkerr(err)
 		// io.WriteString(stdin, "Factory Restore will delete all user data, are you sure? [y/N] ")
 
 		fmt.Println("Factory Restore will delete all user data, are you sure? [y/N] ")
 		var response string
 		fmt.Scanf("%s\n", &response)
-		ioutil.WriteFile("/proc/sys/kernel/printk", []byte("4 4 1 7"), 0644)
+		err = ioutil.WriteFile("/proc/sys/kernel/printk", []byte("4 4 1 7"), 0644)
+		rplib.Checkerr(err)
 
 		log.Println("response:", response)
 		if "y" != response && "Y" != response {
@@ -323,12 +326,26 @@ func main() {
 	rplib.Shellexec("cp", "-a", "/recovery/factory/snaps", filepath.Join(rootdir, "/var/lib/oem/"))
 	rplib.Shellexec("cp", "-a", "/recovery/factory/snaps-devmode", filepath.Join(rootdir, "/var/lib/oem/"))
 
-	// add firstboot service
-	const MULTI_USER_TARGET_WANTS_FOLDER = "/etc/systemd/system/multi-user.target.wants/"
-	log.Println("[Add FIRSTBOOT service]")
-	rplib.Shellexec("/recovery/bin/rsync", "-a", "--exclude='.gitkeep'", filepath.Join("/recovery/factory", RECOVERY_TYPE)+"/", rootdir+"/")
-	rplib.Shellexec("ln", "-s", "/lib/systemd/system/devmode-firstboot.service", filepath.Join(rootdir, MULTI_USER_TARGET_WANTS_FOLDER, "devmode-firstboot.service"))
-	ioutil.WriteFile(filepath.Join(rootdir, "/var/lib/devmode-firstboot/conf.sh"), []byte(fmt.Sprintf("RECOVERYFSLABEL=\"%s\"\nRECOVERY_TYPE=\"%s\"\n", RECOVERY_LABEL, RECOVERY_TYPE)), 0644)
+	// before add firstboot service
+	// we need to do what "writable-paths" normally does on
+	// boot for etc/systemd/system, i.e. copy all the stuff
+	// from the os into the writable partition. normally
+	// this is the job of the initrd, however it won't touch
+	// the dir if there are files in there already. and a
+	// kernel/os install will create auto-mount units in there
+	// TODO: this is workaround, better to copy from os.snap
+	src := filepath.Join("etc", "systemd", "system")
+	dst := filepath.Join(rootdir, "etc", "systemd", "system")
+	if err := os.MkdirAll(dst, 0755); err != nil {
+		panic(err)
+	}
+	rplib.Shellexec("/recovery/bin/rsync", "-a", src+"/", dst+"/")
+
+	// unpack writable_local-include
+	rplib.Shellexec("unsquashfs", "-f", "-d", "/tmp/writable/", recoverydirs.WritableLocalIncludeSquashfs)
+
+	err = ioutil.WriteFile(filepath.Join(rootdir, "/var/lib/devmode-firstboot/conf.sh"), []byte(fmt.Sprintf("RECOVERYFSLABEL=\"%s\"\nRECOVERY_TYPE=\"%s\"\n", RECOVERY_LABEL, RECOVERY_TYPE)), 0644)
+	rplib.Checkerr(err)
 
 	// add new uefi entry
 	log.Println("[add new uefi entry]")
