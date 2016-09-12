@@ -20,4 +20,4 @@
 package main
 
 // Set the application version from a constant
-const Version = "0.4"
+const Version = "0.5"
