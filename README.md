@@ -2,6 +2,15 @@
 
 ## Prerequisites
 - ubuntu-recovery-image: could be install from http://github.com/Lyoncore/ubuntu-recovery-image
+- ubuntu-image: could be install via:
+``` bash
+sudo snap install --edge --devmode ubuntu-image
+```
+
+## build base image
+```
+sh cook-image.sh
+```
 
 ## build recovery binary
 ``` bash
