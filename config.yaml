@@ -6,6 +6,7 @@ snaps:
 configs:
   arch: amd64
   baseimage: base.img
+  recoverytype: recovery
   recoverysize: 768
   release: 16
   channel: edge
