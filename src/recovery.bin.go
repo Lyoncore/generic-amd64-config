@@ -174,7 +174,7 @@ menuentry "%s" {
         set cmdline="root=LABEL=%s ro init=/lib/systemd/systemd console=ttyS0 console=tty1 panic=-1 -- recoverytype=%s"
         echo "[grub.cfg] loading kernel..."
         loopback loop0 /kernel.snap
-        linux (loop0)/vmlinuz $cmdline
+        linux (loop0)/kernel.img $cmdline
         echo "[grub.cfg] loading initrd..."
         initrd /initrd.img
         echo "[grub.cfg] boot..."
